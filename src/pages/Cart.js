@@ -1,8 +1,10 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {StyleSheet, Text, View, FlatList, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, FlatList, TouchableOpacity, Alert} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
 
 import {userContext} from '../App';
+
+import {ipAddress} from '../config/IpAddress';
 
 const Cart = ({navigation}) => {
   // from context
@@ -21,6 +23,7 @@ const Cart = ({navigation}) => {
   const [uang, setUang] = useState('0')
   const [kembalian, setKembalian] = useState('0')
   const [profit, setProfit] = useState('0')
+  const [modalBarang, setModalBarang] = useState('0')
 
   useEffect(() => {
     if (cart) {
@@ -28,15 +31,17 @@ const Cart = ({navigation}) => {
       var tempModal = 0;
       var tempProfit = 0;
       cart?.forEach(val => {
-        console.log(val);
+        //console.log(val);
         tempTotal = tempTotal + Number(val.total);
         tempModal = tempModal + Number(val.baseTotal)
-        tempProfit = tempProfit + (tempTotal - tempModal)
+        tempProfit = (tempProfit + (Number(val.total) - Number(val.baseTotal)))
       });
       tempTotal = String(tempTotal);
       tempProfit = String(tempProfit)
+      tempModal = String(tempModal)
       setTotal(tempTotal);
       setProfit(tempProfit)
+      setModalBarang(tempModal)
     }
     
     if(Number(uang) > 0) {
@@ -48,6 +53,84 @@ const Cart = ({navigation}) => {
     
 
   }, [uang]);
+
+
+  const addOrder = async () => {
+    await fetch(ipAddress + 'api/order', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        saler : username,
+        total : total,
+        modal : modalBarang,
+        profit: profit
+      }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        // for debug
+        //console.log(data)
+        addOrderDetail(data.id)
+      })
+      .catch(e => Alert.alert(e.message));
+  }
+
+  const addOrderDetail = async (id) => {
+    cart?.forEach(async val => { 
+    await fetch(ipAddress + 'api/orderdetail', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        order_id : id,
+        product_id : val.id,
+        model : val.model,
+        quantity : val.quantity,
+        price : val.price,
+        subtotal : val.total
+      }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        deductQty(val.id, val.quantity)
+        // for debug
+        // console.log(data)
+      })
+      .catch(e => Alert.alert(e.message));
+    })
+    Alert.alert('Order Tersimpan');
+    setTotal('')
+    setModalBarang('')
+    setProfit('')
+    setCart('')
+    setUang('0')
+  }
+
+  
+  const deductQty = async (id, qty) => {
+    await fetch(ipAddress + 'api/deductquantity/' + id, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        quantity : qty,
+      }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        // for debug
+        console.log(data)
+      })
+      .catch(e => Alert.alert(e.message));
+    }
+  
 
   const renderOutput = (item, index) => {
     return (
@@ -77,7 +160,7 @@ const Cart = ({navigation}) => {
             renderItem={({item, index}) => renderOutput(item, index)}
           />
         ) : (
-          <Text style={{textAlign: 'center'}}>Product Kosong</Text>
+          <Text style={{textAlign: 'center', paddingBottom: 15}}>Produk Kosong</Text>
         )}
 
 
@@ -86,7 +169,7 @@ const Cart = ({navigation}) => {
         <Text onPress={ () => setUang('20000')}>20,000</Text>
         <Text onPress={ () => setUang('50000')}>50,000</Text>
         </View>
-        <View style={{flexDirection: 'row', justifyContent:'space-evenly', paddingTop: 10}}>
+        <View style={{flexDirection: 'row', justifyContent:'space-evenly', paddingTop: 10, paddingBottom: 15}}>
         <Text onPress={ () => setUang('100000')}>100,000</Text>
         <Text onPress={ () => setUang('200000')}>200,000</Text>
         <Text onPress={ () => setUang('500000')}>500,000</Text>
@@ -107,7 +190,16 @@ const Cart = ({navigation}) => {
         <Text style={{flexDirection:'row', right: 0, padding : 5, textAlign :"right", color:'grey', fontSize: 20}}>
           Profit : RP {profit}
         </Text>
-      <Button Icon="home" onPress={() => navigation.replace('DrawerTab')}>
+      <Button icon="home" onPress={() => {
+        if(cart && uang > 0) {
+          addOrder()
+          Alert.alert("Dibayar");
+        } else if ( uang <= 0){
+          Alert.alert("Masukan Uang Tunai");
+        } else {
+          Alert.alert("Keranjang Kosong");
+        }
+      }}>
         PEMBAYARAN
       </Button>
     </View>

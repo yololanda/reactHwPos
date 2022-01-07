@@ -8,7 +8,7 @@ import {
   Alert,
   Image,
   ScrollView,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 
 // for modal pop up
@@ -31,9 +31,17 @@ const Product = () => {
   const [products, setProducts] = useState('');
   const [displayLocation, setDisplayLocation] = useState('');
 
-  // from context 
-  const {token, username, userRole, cart, setToken, setUsername, setUserRole, setCart} = useContext(userContext)
-
+  // from context
+  const {
+    token,
+    username,
+    userRole,
+    cart,
+    setToken,
+    setUsername,
+    setUserRole,
+    setCart,
+  } = useContext(userContext);
 
   useEffect(() => {
     getProducts();
@@ -55,19 +63,19 @@ const Product = () => {
 
   const [showModal, setModal] = useState({visible: false});
   const [showCartModal, setCartModal] = useState({visible: false});
-  const [buyQty, setBuyQty] = useState('1')
+  const [buyQty, setBuyQty] = useState('1');
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const containerStyle = {backgroundColor: 'white', padding: 20, margin: 30};
 
   // input edit
   const [name, setName] = useState('');
-  const [model, setModel] = useState('')
+  const [model, setModel] = useState('');
   const [price, setPrice] = useState('');
-  const [priceDiscount, setPriceDiscount] = useState('')
-  const [priceBase, setPriceBase] = useState('')
+  const [priceDiscount, setPriceDiscount] = useState('');
+  const [priceBase, setPriceBase] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [quantityWarehouse, setQuantityWarehouse] = useState('')
+  const [quantityWarehouse, setQuantityWarehouse] = useState('');
   const [editId, setEditId] = useState('');
   const [locationIndex, setLocationIndex] = useState('');
   const [location, setLocation] = useState('');
@@ -78,17 +86,16 @@ const Product = () => {
     setName('');
     setPrice('');
     setQuantity('');
-    setQuantityWarehouse('')
+    setQuantityWarehouse('');
   };
 
   const clearModalCart = () => {
     setModel('');
     setPrice('');
     setBuyQty('1');
-    setPriceDiscount('')
-    setPriceBase('')
+    setPriceDiscount('');
+    setPriceBase('');
   };
-
 
   const deleteProduct = (id, name) => {
     Alert.alert('Info', 'Hapus Produk ' + name + ' ?', [
@@ -117,7 +124,7 @@ const Product = () => {
   };
 
   const editProduct = async () => {
-    console.log('edit gudang ' + quantityWarehouse)
+    console.log('edit gudang ' + quantityWarehouse);
     await fetch(ipAddress + 'api/product/' + editId, {
       method: 'PUT',
       headers: {
@@ -129,7 +136,7 @@ const Product = () => {
         discount_price: priceDiscount,
         quantity_shop: quantity,
         quantity_warehouse: quantityWarehouse,
-        location_id: location
+        location_id: location,
       }),
     })
       .then(res => res.json())
@@ -192,7 +199,7 @@ const Product = () => {
     }
   };
 
-  const displayLocationName =  (location_id) => {
+  const displayLocationName = location_id => {
     var index = '';
     try {
       index = displayLocation?.findIndex(val => val.id == location_id);
@@ -204,44 +211,50 @@ const Product = () => {
   };
 
   const addToCart = () => {
-    setLoading(true)
+    setLoading(true);
     try {
-    var addPrice = Number(price)
-    var addPriceBase = Number(priceBase)
-    //var addDiscountPrice = Number(priceDiscount)
-    var qty = Number(buyQty)
-    var total = (price * qty)
-    total = String(total)
+      var addPrice = Number(price);
+      var addPriceBase = Number(priceBase);
+      //var addDiscountPrice = Number(priceDiscount)
+      var qty = Number(buyQty);
+      var total = price * qty;
+      total = String(total);
 
-    var baseTotal = (addPriceBase * qty)
-    baseTotal = String(baseTotal)
-    setCart( [...cart, {
-      'id' : editId,
-      'price' : addPrice,
-      'model' : model,
-      'total' : total,
-      'quantity' : qty,
-      'priceBase' : addPriceBase,
-      'baseTotal' : baseTotal
-    }])
-    } catch (e) {console.log(e)} finally { 
-      console.log(cart)}
-      clearModalCart()
-      setLoading(false)
-      setCartModal({visible: false})
-  }
+      var baseTotal = (addPriceBase * qty);
+      baseTotal = String(baseTotal);
+      setCart([
+        ...cart,
+        {
+          id: editId,
+          price: addPrice,
+          model: model,
+          total: total,
+          quantity: qty,
+          priceBase: addPriceBase,
+          baseTotal: baseTotal,
+        },
+      ]);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      console.log(cart);
+    }
+    clearModalCart();
+    setLoading(false);
+    setCartModal({visible: false});
+  };
 
   const renderOutput = (item, index) => {
     return (
       <TouchableOpacity
         key={item.id}
         onPress={() => {
-          setModel(item.model)
+          setModel(item.model);
           setEditId(String(item.id));
-          setCartModal({visible: true})
+          setCartModal({visible: true});
           setPrice(String(item.price));
-          setPriceDiscount(String(item.discount_price))
-          setPriceBase(String(item.base_price))
+          setPriceDiscount(String(item.discount_price));
+          setPriceBase(String(item.base_price));
         }}
         style={styles.listItems}>
         <View style={{flexDirection: 'row'}}>
@@ -251,7 +264,10 @@ const Product = () => {
               style={styles.noImage}></Image>
           </View>
           <View style={styles.cardViewContent}>
-            <Text style={{fontWeight: 'bold'}}>{item.model}{'\n'}</Text>
+            <Text style={{fontWeight: 'bold'}}>
+              {item.model}
+              {'\n'}
+            </Text>
             <Text>Harga : {item.price}</Text>
             <Text>Grosir : {item.discount_price}</Text>
             <Text>Modal : {item.base_price}</Text>
@@ -272,14 +288,14 @@ const Product = () => {
                 setModal({visible: true});
                 setName(item.name);
                 setPrice(String(item.price));
-                setPriceDiscount(String(item.discount_price))
+                setPriceDiscount(String(item.discount_price));
                 setQuantity(String(item.quantity_shop));
-                setQuantityWarehouse(String(item.quantity_warehouse))
+                setQuantityWarehouse(String(item.quantity_warehouse));
                 setEditId(String(item.id));
                 getLocationIndex(String(item.location_id));
 
                 // for default, if not selected then use from db
-                setLocation(item.location_id)
+                setLocation(item.location_id);
               }}
               style={styles.editTxt}
             />
@@ -343,7 +359,7 @@ const Product = () => {
                 onChangeText={val => setName(val)}
                 editable={false}
               />
-              
+
               <TextInput
                 label="Price"
                 keyboardType={'decimal-pad'}
@@ -401,36 +417,41 @@ const Product = () => {
               setCartModal({visible: false});
             }}
             contentContainerStyle={containerStyle}>
-              <TextInput
-                label="Model"
-                value={model}
-                onChangeText={val => setModel(val)}
-                editable={false}
-              />
-              <Text style={{color:'blue'}} onPress={ () => setPrice(priceDiscount)}>Grossir : {priceDiscount}</Text>
-              <TextInput
-                label="Price"
-                keyboardType={'decimal-pad'}
-                value={price}
-                onChangeText={val => setPrice(val)}
-              />
+            <TextInput
+              label="Model"
+              value={model}
+              onChangeText={val => setModel(val)}
+              editable={false}
+            />
+            <Text
+              style={{color: 'blue'}}
+              onPress={() => setPrice(priceDiscount)}>
+              Grossir : {priceDiscount}
+            </Text>
+            <TextInput
+              label="Price"
+              keyboardType={'decimal-pad'}
+              value={price}
+              onChangeText={val => setPrice(val)}
+            />
 
-              <TextInput
-                label="Jumlah"
-                keyboardType={'number-pad'}
-                value={buyQty}
-                onChangeText={val => setBuyQty(val)}
-              />
+            <TextInput
+              label="Jumlah"
+              keyboardType={'number-pad'}
+              value={buyQty}
+              onChangeText={val => setBuyQty(val)}
+            />
 
-<Button Icon="camera" onPress={() => addToCart()}>
-                {' '}
-                Tambah Keranjang{' '}
-              </Button>
-              <ActivityIndicator size="large" color="#00ff00" animating={loading} />
-
+            <Button Icon="camera" onPress={() => addToCart()}>
+              {' '}
+              Tambah Keranjang{' '}
+            </Button>
+            <ActivityIndicator
+              size="large"
+              color="#00ff00"
+              animating={loading}
+            />
           </Modal>
-          
-
         </Portal>
         {/* modal react-native-paper */}
       </View>
