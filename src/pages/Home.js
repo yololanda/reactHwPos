@@ -1,10 +1,34 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
+import moment from 'moment'
+
+import {ipAddress} from '../config/IpAddress';
 
 const Home = ({navigation}) => {
 
   const [model, setModel] = useState('')
+  const [totalProfit, setTotalProfit] = useState('0')
+
+  useEffect( () => {
+    getTotalProfit()
+  })
+
+  const getToday = () => (moment(new Date()).format("DD/MM/YYYY"))
+
+  const getTotalProfit = async () => {
+    const result = await fetch(ipAddress + 'api/profit', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        //console.log(data['0']['total'])
+        setTotalProfit(data['0']['total'].replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+      });
+  };
   
   return (
     <View style={styles.page}>
@@ -14,12 +38,12 @@ const Home = ({navigation}) => {
         </View>
 
         <View style={styles.penjualanDate}>
-          <Text style={{fontWeight: 'bold'}}>Penjualan</Text>
-          <Text>22/12/2021</Text>
+          <Text style={{fontWeight: 'bold'}}>Keuntungan</Text>
+          <Text>{getToday()}</Text>
         </View>
 
         <View style={styles.penjualanPrice}>
-          <Text style={{fontWeight: 'bold'}}>Rp 20000</Text>
+          <Text style={{fontWeight: 'bold', color:'#32CD32'}}>Rp {totalProfit}</Text>
         </View>
       </View>
 

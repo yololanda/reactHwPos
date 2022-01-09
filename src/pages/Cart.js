@@ -115,6 +115,7 @@ const Cart = ({navigation}) => {
     setProfit('');
     setCart('');
     setUang('0');
+    setKembalian('0');
   };
 
   const deductQty = async (id, qty) => {
@@ -131,7 +132,9 @@ const Cart = ({navigation}) => {
       .then(res => res.json())
       .then(data => {
         // for debug
-        console.log(data);
+        console.log("item Id : " + id)
+        console.log("item deduct : " + qty)
+        //console.log(data);
       })
       .catch(e => Alert.alert(e.message));
   };
@@ -142,7 +145,8 @@ const Cart = ({navigation}) => {
     navigation.replace('Cart');
   };
 
-  const rupiahFormat = numberInput => ( String(numberInput).replace(/\B(?=(\d{3})+(?!\d))/g, ',') )
+  const rupiahFormat = numberInput =>
+    String(numberInput).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
   const renderOutput = (item, index) => {
     return (
@@ -154,7 +158,8 @@ const Cart = ({navigation}) => {
           <View style={{flexDirection: 'column', width: '70%'}}>
             <Text style={{fontWeight: 'bold'}}>{item.model}</Text>
             <Text>
-              { rupiahFormat(item.price)} X {item.quantity} = RP {rupiahFormat(item.total)}
+              {rupiahFormat(item.price)} X {item.quantity} = RP{' '}
+              {rupiahFormat(item.total)}
             </Text>
           </View>
           <View style={{flexDirection: 'column'}}>
@@ -189,14 +194,20 @@ const Cart = ({navigation}) => {
             justifyContent: 'space-evenly',
             paddingTop: 20,
           }}>
-          <Text style={styles.uangPas} onPress={() => setUang('10000')}>
-            10,000
+          <Text
+            style={styles.uangPas}
+            onPress={() => setUang(String(Number(uang) + 500))}>
+            500
           </Text>
-          <Text style={styles.uangPas} onPress={() => setUang('20000')}>
-            20,000
+          <Text
+            style={styles.uangPas}
+            onPress={() => setUang(String(Number(uang) + 1000))}>
+            1,000
           </Text>
-          <Text style={styles.uangPas} onPress={() => setUang('50000')}>
-            50,000
+          <Text
+            style={styles.uangPas}
+            onPress={() => setUang(String(Number(uang) + 2000))}>
+            2,000
           </Text>
         </View>
         <View
@@ -204,18 +215,61 @@ const Cart = ({navigation}) => {
             flexDirection: 'row',
             justifyContent: 'space-evenly',
             paddingTop: 10,
-            paddingBottom: 20,
           }}>
-          <Text style={styles.uangPas} onPress={() => setUang('100000')}>
-            100,000
+          <Text
+            style={styles.uangPas}
+            onPress={() => setUang(String(Number(uang) + 5000))}>
+            5,000
           </Text>
-          <Text style={styles.uangPas} onPress={() => setUang('200000')}>
-            200,000
+          <Text
+            style={styles.uangPas}
+            onPress={() => setUang(String(Number(uang) + 10000))}>
+            10,000
           </Text>
-          <Text style={styles.uangPas} onPress={() => setUang('500000')}>
-            500,000
+          <Text
+            style={styles.uangPas}
+            onPress={() => setUang(String(Number(uang) + 20000))}>
+            20,000
           </Text>
         </View>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-evenly',
+            paddingTop: 10, 
+          }}>
+          <Text
+            style={styles.uangPas}
+            onPress={() => setUang(String(Number(uang) + 50000))}>
+            50,000
+          </Text>
+          <Text
+            style={styles.uangPas}
+            onPress={() => setUang(String(Number(uang) + 70000))}>
+            70,000
+          </Text>
+          <Text
+            style={styles.uangPas}
+            onPress={() => setUang(String(Number(uang) + 100000))}>
+            100,000
+          </Text>
+        </View>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-evenly',
+            paddingTop: 10,
+            paddingBottom: 20,
+          }}>
+          <Text
+            style={styles.uangPas}
+            onPress={() => setUang(total)}>
+            Uang Pas
+          </Text>
+        </View>
+
         <TextInput
           label="Uang Tunai"
           placeholder=""
@@ -226,13 +280,11 @@ const Cart = ({navigation}) => {
       <Text style={styles.total}>
         {'\n'}Total Belanja : RP {rupiahFormat(total)}
       </Text>
-      <Text style={styles.total}>
-        Kembalian : RP {rupiahFormat(kembalian)}
-      </Text>
+      <Text style={styles.total}>Kembalian : RP {rupiahFormat(kembalian)}</Text>
       <Text style={styles.kembalian} onPress={() => setHideProfit(!hideProfit)}>
         {hideProfit
-          ? `Profit : RP ${rupiahFormat(profit)}`
-          : '***************'}
+          ? `RP ${rupiahFormat(profit)}`
+          : '-----------------------------------------'}
       </Text>
       <Button
         icon="home"
@@ -274,12 +326,13 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   uangPas: {
-    backgroundColor: '#ffa500',
+    backgroundColor: '#ffc864',
     color: '#0000ff',
     width: 70,
     padding: 5,
     borderRadius: 7,
     textAlign: 'center',
+    fontWeight: 'bold',
 
     // adding shadow
     shadowOpacity: 0.25,
@@ -307,7 +360,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     alignSelf: 'center',
-    backgroundColor: '#ffa500',
+    backgroundColor: '#ffc864',
     borderRadius: 8,
     color: '0000ff',
 

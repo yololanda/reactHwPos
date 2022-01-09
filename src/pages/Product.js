@@ -227,11 +227,12 @@ const Product = () => {
       let itemExist = cart ? cart.findIndex( item => item.id === editId) : -1
       
       if (Number(itemExist) >= 0) {
-
+        console.log('apa pula')
         cart[String(itemExist)]['quantity'] = String( Number(cart[String(itemExist)]['quantity']) + Number(qty) )
         cart[String(itemExist)]['total'] = String( Number(cart[String(itemExist)]['total']) + Number(total) )
         cart[String(itemExist)]['baseTotal'] = String( Number(cart[String(itemExist)]['baseTotal']) + Number(baseTotal) )
       } else {
+        console.log('kesini dolo')
       setCart([
         ...cart,
         {

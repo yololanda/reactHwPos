@@ -8,9 +8,9 @@ import {
 } from 'react-native';
 import {Button, Appbar} from 'react-native-paper';
 
-import { ipAddress } from './config/IpAddress';
+import {ipAddress} from './config/IpAddress';
 
-import {userContext} from './App'
+import {userContext} from './App';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -22,13 +22,19 @@ const DrawerTab = ({navigation}) => {
 
   const [loading, setLoading] = useState(false);
 
+  // from context
+  const {
+    token,
+    username,
+    userRole,
+    cart,
+    setToken,
+    setUsername,
+    setUserRole,
+    setCart,
+  } = useContext(userContext);
 
-  // from context 
-  const {token, username, userRole, cart, setToken, setUsername, setUserRole, setCart} = useContext(userContext)
-
-  useEffect(() => {
-
-  }, [token, username, userRole, cart])
+  useEffect(() => {}, [token, username, userRole, cart]);
 
   const loggout = async () => {
     setLoading(true);
@@ -37,7 +43,7 @@ const DrawerTab = ({navigation}) => {
       .then(async data => {
         if (data != null) {
           var bearer = 'Bearer ' + data;
-          const result = await fetch(ipAddress+'api/logout', {
+          const result = await fetch(ipAddress + 'api/logout', {
             method: 'POST',
             headers: {
               Authorization: bearer,
@@ -50,15 +56,15 @@ const DrawerTab = ({navigation}) => {
               // this chainning to prevent null _u _V _w
               AsyncStorage.removeItem('token')
                 .then(res => res)
-                .then( async res => {
-                  await AsyncStorage.removeItem('username')
-                  await AsyncStorage.removeItem('role')
-                  setUsername('')
-                  setUserRole('')
-                  setToken('')
-                  setCart('')
+                .then(async res => {
+                  await AsyncStorage.removeItem('username');
+                  await AsyncStorage.removeItem('role');
+                  setUsername('');
+                  setUserRole('');
+                  setToken('');
+                  setCart('');
                   setLoading(false);
-                  navigation.replace('Login') 
+                  navigation.replace('Login');
                 });
             })
             .catch(e => console.log(e.message));
@@ -69,34 +75,36 @@ const DrawerTab = ({navigation}) => {
   const navigationView = () => (
     <View>
       <View style={styles.drawerView}>
-      <Button icon="home-circle">Beranda</Button>
-      
-      <Button icon="shopping" onPress={() => navigation.navigate('Product')}>
-        Kelola Produk
-      </Button>
-      <Button onPress={() => navigation.navigate('AddProduct')}>
-        {'\t\t\t\t\t'}Produk Baru
-      </Button>
-      <Button onPress={() => navigation.navigate('Order')} icon="sale">Penjualan</Button>
-      <Button
-        icon="format-list-bulleted-type"
-        onPress={() => {
-          navigation.navigate('Category');
-        }}>
-        Kategori
-      </Button>
-      <Button
-        icon="library-shelves"
-        onPress={() => {
-          navigation.navigate('Location');
-        }}>
-        Lokasi
-      </Button>
-      <Button icon="face-profile">Supplier</Button>
-      <Button icon="shopping">Pegawai</Button>
-      <Button icon="exit-to-app" onPress={() => loggout()}>
-        Keluar dari System
-      </Button>
+        <Button icon="home-circle">Beranda</Button>
+
+        <Button icon="shopping" onPress={() => navigation.navigate('Product')}>
+          Kelola Produk
+        </Button>
+        <Button onPress={() => navigation.navigate('AddProduct')}>
+          {'\t\t\t\t\t'}Produk Baru
+        </Button>
+        <Button onPress={() => navigation.navigate('Order')} icon="sale">
+          Penjualan
+        </Button>
+        <Button
+          icon="format-list-bulleted-type"
+          onPress={() => {
+            navigation.navigate('Category');
+          }}>
+          Kategori
+        </Button>
+        <Button
+          icon="library-shelves"
+          onPress={() => {
+            navigation.navigate('Location');
+          }}>
+          Lokasi
+        </Button>
+        <Button icon="face-profile">Supplier</Button>
+        <Button icon="shopping">Pegawai</Button>
+        <Button icon="exit-to-app" onPress={() => loggout()}>
+          Keluar dari System
+        </Button>
       </View>
       <View style={{flexDirection: 'column', alignContent: 'center'}}>
         <ActivityIndicator size="large" color="#00ff00" animating={loading} />
@@ -115,7 +123,9 @@ const DrawerTab = ({navigation}) => {
           icon="menu"
           color="blue"
           onPress={() => drawer.current.openDrawer()}></Appbar.Action>
-        <Text style={{color: 'blue', fontWeight: 'bold'}}>BERANDA - {username}</Text>
+        <Text style={{color: 'blue', fontWeight: 'bold'}}>
+          BERANDA - {username}
+        </Text>
       </Appbar>
       <Home navigation={navigation} />
     </DrawerLayoutAndroid>

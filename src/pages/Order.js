@@ -4,7 +4,7 @@ import {StyleSheet, Text, View, FlatList, TouchableOpacity} from 'react-native';
 
 import {ipAddress} from '../config/IpAddress';
 
-const Order = () => {
+const Order = ({navigation}) => {
   const [orders, setOrders] = useState('');
 
   useEffect(() => {
@@ -28,12 +28,20 @@ const Order = () => {
     return ( 
         <TouchableOpacity 
         key={item.id}
+        style={styles.listOrders}
+        onPress={ () => navigation.navigate('OrderDetail', {
+            itemId: item.id,
+            tanggal: item.tanggal,
+            total: item.total,
+        })}
         >
+            <Text>Order No : {item.id}</Text>
+            <Text>Tanggal : {item?.tanggal}</Text>
             <Text>Saler : {item.saler}</Text>
             <Text>Total Belanja : {item.total}</Text>
             <Text>Modal Barang : {item.modal}</Text>
             <Text>Keuntungan : {item.profit}</Text>
-            <Text>Tanggal : {item.created_at}</Text>
+            
         </TouchableOpacity>
     ) 
 }
@@ -61,4 +69,20 @@ const styles = StyleSheet.create({
   page: {
     flex: 1,
   },
+  listOrders: {
+    flex: 1,
+    paddingTop: 5,
+    paddingLeft: 30,
+    paddingBottom: 5,
+    borderColor: 'grey',
+    backgroundColor: 'white',
+    margin: 5,
+    marginLeft: 10,
+    marginRight: 10,
+
+    // adding shadow
+    shadowOpacity: 0.25,
+    shadowRadius: 3.8,
+    elevation: 5,
+  }
 });

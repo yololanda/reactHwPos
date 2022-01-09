@@ -17,6 +17,7 @@ import ProductAdd from './pages/ProductAdd'
 import Category from './pages/Category';
 import Location from './pages/Location';
 import Order from './pages/Order';
+import OrderDetail from './pages/OrderDetail';
 
 const Router = () => {
 
@@ -57,6 +58,11 @@ const Router = () => {
             name="Order"
             component={Order}
             options={{title: 'Penjualan'}}
+          />
+          <Stack.Screen
+            name="OrderDetail"
+            component={OrderDetail}
+            options={{title: 'Detail Penjualan'}}
           />
           <Stack.Screen
             name="Category"
