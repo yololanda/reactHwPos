@@ -222,6 +222,16 @@ const Product = () => {
 
       var baseTotal = (addPriceBase * qty);
       baseTotal = String(baseTotal);
+
+      //check item exist?
+      let itemExist = cart ? cart.findIndex( item => item.id === editId) : -1
+      
+      if (Number(itemExist) >= 0) {
+
+        cart[String(itemExist)]['quantity'] = String( Number(cart[String(itemExist)]['quantity']) + Number(qty) )
+        cart[String(itemExist)]['total'] = String( Number(cart[String(itemExist)]['total']) + Number(total) )
+        cart[String(itemExist)]['baseTotal'] = String( Number(cart[String(itemExist)]['baseTotal']) + Number(baseTotal) )
+      } else {
       setCart([
         ...cart,
         {
@@ -234,6 +244,7 @@ const Product = () => {
           baseTotal: baseTotal,
         },
       ]);
+    }
     } catch (e) {
       console.log(e);
     } finally {

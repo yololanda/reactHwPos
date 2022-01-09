@@ -70,13 +70,14 @@ const DrawerTab = ({navigation}) => {
     <View>
       <View style={styles.drawerView}>
       <Button icon="home-circle">Beranda</Button>
-      <Button icon="sale">Penjualan</Button>
+      
       <Button icon="shopping" onPress={() => navigation.navigate('Product')}>
         Kelola Produk
       </Button>
       <Button onPress={() => navigation.navigate('AddProduct')}>
         {'\t\t\t\t\t'}Produk Baru
       </Button>
+      <Button onPress={() => navigation.navigate('Order')} icon="sale">Penjualan</Button>
       <Button
         icon="format-list-bulleted-type"
         onPress={() => {

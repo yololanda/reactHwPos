@@ -16,6 +16,7 @@ import Product from './pages/Product';
 import ProductAdd from './pages/ProductAdd'
 import Category from './pages/Category';
 import Location from './pages/Location';
+import Order from './pages/Order';
 
 const Router = () => {
 
@@ -40,7 +41,7 @@ const Router = () => {
           <Stack.Screen
             name="Cart"
             component={Cart}
-            options={{title: 'Cart'}}
+            options={{title: 'Keranjang'}}
           />
           <Stack.Screen
             name="Product"
@@ -51,6 +52,11 @@ const Router = () => {
             name="AddProduct"
             component={ProductAdd}
             options={{title: 'Add Product'}}
+          />
+          <Stack.Screen
+            name="Order"
+            component={Order}
+            options={{title: 'Penjualan'}}
           />
           <Stack.Screen
             name="Category"
