@@ -82,6 +82,7 @@ const Cart = ({navigation}) => {
         addOrderDetail(data.id);
       })
       .catch(e => Alert.alert(e.message));
+      navigation.replace('DrawerTab')
   };
 
   const addOrderDetail = async id => {

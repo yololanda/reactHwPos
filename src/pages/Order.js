@@ -30,7 +30,7 @@ const Order = ({navigation}) => {
         key={item.id}
         style={styles.listOrders}
         onPress={ () => navigation.navigate('OrderDetail', {
-            itemId: item.id,
+            orderId: item.id,
             tanggal: item.tanggal,
             total: item.total,
         })}

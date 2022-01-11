@@ -12,7 +12,7 @@ const Home = ({navigation}) => {
 
   useEffect( () => {
     getTotalProfit()
-  })
+  },[])
 
   const getToday = () => (moment(new Date()).format("DD/MM/YYYY"))
 
@@ -25,8 +25,10 @@ const Home = ({navigation}) => {
     })
       .then(res => res.json())
       .then(data => {
-        //console.log(data['0']['total'])
-        setTotalProfit(data['0']['total'].replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+        console.log(data['0']['total'])
+        if( Number(data['0']['total'] > 0)) {
+          setTotalProfit(data['0']['total'].replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+        }
       });
   };
   
