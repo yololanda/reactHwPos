@@ -19,6 +19,7 @@ import {
   Button,
   TextInput,
   Searchbar,
+  Dialog,
 } from 'react-native-paper';
 
 //import NoImage from '../assets/noimage.jpg'
@@ -43,23 +44,15 @@ const Product = () => {
     setCart,
   } = useContext(userContext);
 
+  // modal scrollable
+  const [visible, setVisible] = useState(false);
+  const hideDialog = () => setVisible(false);
+
   useEffect(() => {
+    getCategories();
     getProducts();
     getLocation();
   }, []);
-
-  const getProducts = async () => {
-    const result = await fetch(ipAddress + 'api/product', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
-        setProducts(data.data);
-      });
-  };
 
   const [showModal, setModal] = useState({visible: false});
   const [showCartModal, setCartModal] = useState({visible: false});
@@ -82,6 +75,8 @@ const Product = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
 
+  const [categories, setCategories] = useState('');
+
   const clearModalInput = () => {
     setName('');
     setPrice('');
@@ -95,6 +90,33 @@ const Product = () => {
     setBuyQty('1');
     setPriceDiscount('');
     setPriceBase('');
+  };
+
+  const getProducts = async () => {
+    const result = await fetch(ipAddress + 'api/product', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        setProducts(data.data);
+      });
+  };
+
+  const getProductByCategory = async (id) => {
+    const result = await fetch(ipAddress + 'api/productcategory/' + id, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        setProducts(data);
+        hideDialog()
+      });
   };
 
   const deleteProduct = (id, name) => {
@@ -190,7 +212,7 @@ const Product = () => {
   const getLocationIndex = async location_id => {
     try {
       var indexLocation = await displayLocation?.findIndex(
-        val => val.id == location_id,
+        (val) => val?.id == location_id,
       );
     } catch (e) {
       console.log(e.message);
@@ -201,13 +223,15 @@ const Product = () => {
 
   const displayLocationName = location_id => {
     var index = '';
+    if(displayLocation) {
     try {
-      index = displayLocation?.findIndex(val => val.id == location_id);
+      index = displayLocation?.findIndex(val => val?.id == location_id);
     } catch (e) {
       console.log(e);
     } finally {
       return displayLocation[index]?.name;
     }
+  }
   };
 
   const addToCart = () => {
@@ -220,32 +244,38 @@ const Product = () => {
       var total = price * qty;
       total = String(total);
 
-      var baseTotal = (addPriceBase * qty);
+      var baseTotal = addPriceBase * qty;
       baseTotal = String(baseTotal);
 
       //check item exist?
-      let itemExist = cart ? cart.findIndex( item => item.id === editId) : -1
-      
+      let itemExist = cart ? cart.findIndex(item => item.id === editId) : -1;
+
       if (Number(itemExist) >= 0) {
-        console.log('apa pula')
-        cart[String(itemExist)]['quantity'] = String( Number(cart[String(itemExist)]['quantity']) + Number(qty) )
-        cart[String(itemExist)]['total'] = String( Number(cart[String(itemExist)]['total']) + Number(total) )
-        cart[String(itemExist)]['baseTotal'] = String( Number(cart[String(itemExist)]['baseTotal']) + Number(baseTotal) )
+        console.log('apa pula');
+        cart[String(itemExist)]['quantity'] = String(
+          Number(cart[String(itemExist)]['quantity']) + Number(qty),
+        );
+        cart[String(itemExist)]['total'] = String(
+          Number(cart[String(itemExist)]['total']) + Number(total),
+        );
+        cart[String(itemExist)]['baseTotal'] = String(
+          Number(cart[String(itemExist)]['baseTotal']) + Number(baseTotal),
+        );
       } else {
-        console.log('kesini dolo')
-      setCart([
-        ...cart,
-        {
-          id: editId,
-          price: addPrice,
-          model: model,
-          total: total,
-          quantity: qty,
-          priceBase: addPriceBase,
-          baseTotal: baseTotal,
-        },
-      ]);
-    }
+        console.log('kesini dolo');
+        setCart([
+          ...cart,
+          {
+            id: editId,
+            price: addPrice,
+            model: model,
+            total: total,
+            quantity: qty,
+            priceBase: addPriceBase,
+            baseTotal: baseTotal,
+          },
+        ]);
+      }
     } catch (e) {
       console.log(e);
     } finally {
@@ -254,6 +284,19 @@ const Product = () => {
     clearModalCart();
     setLoading(false);
     setCartModal({visible: false});
+  };
+
+  const getCategories = async () => {
+    const result = await fetch(ipAddress + 'api/categories', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        setCategories(data);
+      });
   };
 
   const renderOutput = (item, index) => {
@@ -317,18 +360,29 @@ const Product = () => {
     );
   };
 
+  const renderCategories = (item, index) => { 
+    return (
+    <Text onPress={ () => getProductByCategory(item.id)} style ={{ fontSize: 20, fontWeight: 'bold', padding: 5, borderWidth: 0.5}} >{item.name}</Text>
+    )
+  }
+
   // this is the main render app()
   // renderItem <-- need to be return. return with () not {}
   return (
     <PaperProvider>
       <View style={styles.page}>
         <View style={{flexDirection: 'row'}}>
+          <Button
+            icon="filter"
+            style={{width: '8%', margin: 1, justifyContent: 'center'}}
+            onPress={() => setVisible(true)}
+          />
           <Searchbar
             placeholder="Search"
             onChangeText={val => setSearchQuery(val)}
             value={searchQuery}
             autoCapitalize="characters"
-            style={{width: '70%', margin: 10}}
+            style={{width: '50%', margin: 8}}
           />
           <Button
             icon="arrow-right-bold-hexagon-outline"
@@ -464,6 +518,23 @@ const Product = () => {
               animating={loading}
             />
           </Modal>
+
+          {/* modal with dialog */}
+          <Dialog visible={visible} onDismiss={hideDialog}>
+            <Dialog.ScrollArea>
+             
+                {categories[0]?.id ? (
+                  <FlatList
+                    keyExtractor={item => item.id}
+                    data={categories}
+                    renderItem={({item, index}) => renderCategories(item, index)}
+                  />
+                ) : (
+                  <Text style={{textAlign: 'center'}}>Kategori Kosong</Text>
+                )}
+              
+            </Dialog.ScrollArea>
+          </Dialog>
         </Portal>
         {/* modal react-native-paper */}
       </View>
