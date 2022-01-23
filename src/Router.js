@@ -18,6 +18,7 @@ import Category from './pages/Category';
 import Location from './pages/Location';
 import Order from './pages/Order';
 import OrderDetail from './pages/OrderDetail';
+import Scan from './pages/Scan'
 
 const Router = () => {
 
@@ -73,6 +74,11 @@ const Router = () => {
             name="Location"
             component={Location}
             options={{title: 'Location'}}
+          />
+          <Stack.Screen
+            name="Scan"
+            component={Scan}
+            options={{title: 'Scan'}}
           />
         </Stack.Navigator>
       </NavigationContainer>

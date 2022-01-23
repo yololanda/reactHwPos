@@ -1,5 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text, View, FlatList, TouchableOpacity, Alert} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 
 // for modal pop up
 import {
@@ -12,6 +19,14 @@ import {
 } from 'react-native-paper';
 
 import {ipAddress} from '../config/IpAddress';
+import ThermalPrinterModule from 'react-native-thermal-printer';
+
+ThermalPrinterModule.defaultConfig = {
+  ...ThermalPrinterModule.defaultConfig,
+  ip: '192.168.100.246',
+  port: 9100,
+  printerWidthMM: 50,
+};
 
 const OrderDetail = ({route, navigation}) => {
   const {orderId, tanggal, total} = route.params;
@@ -23,9 +38,9 @@ const OrderDetail = ({route, navigation}) => {
   const [returnQty, setReturnQty] = useState('0');
   const [targetedId, setTargetedId] = useState('0');
   const [reason, setReason] = useState('...');
-  const [price, setPrice] = useState('0')
+  const [price, setPrice] = useState('0');
 
-  const [reload, setReload] = useState(false)
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     getOrderDetail();
@@ -41,7 +56,7 @@ const OrderDetail = ({route, navigation}) => {
     })
       .then(res => res.json())
       .then(data => {
-        console.log(orderDetail);
+        //console.log(orderDetail);
         setOrderDetail(data);
       })
       .catch(e => Alert.alert(e.message));
@@ -49,15 +64,14 @@ const OrderDetail = ({route, navigation}) => {
 
   const rupiahFormat = numberInput =>
     String(numberInput).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    
-  const setProductReturn =  (id, qty, model, price) => {
-    setModal({visible: true})
-    setTargetedId(String(id))
-    setItemModel(model)
-    setReturnQty(String(qty))
-    setPrice(String(price))
-  }
 
+  const setProductReturn = (id, qty, model, price) => {
+    setModal({visible: true});
+    setTargetedId(String(id));
+    setItemModel(model);
+    setReturnQty(String(qty));
+    setPrice(String(price));
+  };
 
   const setReturnProduct = async () => {
     await fetch(ipAddress + 'api/orderreturn', {
@@ -67,28 +81,53 @@ const OrderDetail = ({route, navigation}) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        order_id : orderId,
+        order_id: orderId,
         product_id: targetedId,
-        model : itemModel,
-        quantity : returnQty,
-        price : price,
-        reason : reason
+        model: itemModel,
+        quantity: returnQty,
+        price: price,
+        reason: reason,
       }),
     })
       .then(res => res.json())
       .then(data => {
         if (data) {
-          setReload(!reload)
+          setReload(!reload);
           setModal({visible: false});
-          setTargetedId('0')
-          setItemModel('')
-          setReturnQty('0')
-          setPrice('0')
+          setTargetedId('0');
+          setItemModel('');
+          setReturnQty('0');
+          setPrice('0');
         } else {
           Alert.alert('Tidak Terupdate');
         }
       })
       .catch(e => Alert.alert(e.message));
+  };
+
+  const printOrder = async () => {
+    try {
+    await ThermalPrinterModule.printBluetooth({ payload: printPayload()});
+    //console.log(printPayload())
+    } catch (e ){console.log(e)}
+  }
+
+  const printPayload = () => {
+    var print = "[L]      TOKO PLASTIK\n[L]   Jalan Jendral Sudirman\n[L]   Sungai Pakning\n"
+    + "[L]NO#" +orderId+ " | " +tanggal + "\n" + "[L]----------------------------\n"
+
+    orderDetail.forEach( val => {
+      var name = val.name
+      name = name.substring(0,15)
+      print = print + "[L]" + val.model + " | "
+      + name + "\n"
+      + "[L]" + rupiahFormat(val.price) + " X " + val.quantity + "\t= RP " + rupiahFormat(val.subtotal)+ "\n"
+    }) 
+
+    print = print + "[L]----------------------------\n" + 
+    "[L]         Total : RP " + rupiahFormat(total) + "\n"+
+    "[L]    *****Terima kasih******" + "\n"
+    return print
   }
 
   const renderOutput = (item, index) => {
@@ -96,9 +135,17 @@ const OrderDetail = ({route, navigation}) => {
       <TouchableOpacity
         key={item.id}
         style={item.return ? styles.listItemsReturn : styles.listItems}
-        onPress={() => setProductReturn(item.product_id, item.quantity, item.model, item.price) }>
+        onPress={() =>
+          setProductReturn(
+            item.product_id,
+            item.quantity,
+            item.model,
+            item.price,
+          )
+        }>
         <View style={{flexDirection: 'row', flex: 1}}>
           <View style={{flexDirection: 'column', width: '70%'}}>
+            <Text>{item.name}</Text>
             <Text style={{fontWeight: 'bold'}}>{item.model}</Text>
             <Text>
               {rupiahFormat(item.price)} X {item.quantity} = RP{' '}
@@ -113,8 +160,15 @@ const OrderDetail = ({route, navigation}) => {
   return (
     <PaperProvider>
       <View style={{margin: 10, flex: 1}}>
-        <Text>Tanggal {tanggal}</Text>
-        <Text>Order Number: {orderId}</Text>
+        <View style = {{flexDirection : 'row'}}>
+          <View style = {{flexDirection : 'column', padding : 8}}>
+            <Text>Tanggal {tanggal}</Text>
+            <Text>Order Number: {orderId}</Text>
+          </View>
+          <View style = {{flexDirection : 'column', padding : 8}}>
+            <Button icon="printer" onPress={ () => printOrder()}>Cetak Struk</Button>
+          </View>
+        </View>
         <View>
           {orderDetail ? (
             <FlatList
@@ -138,14 +192,14 @@ const OrderDetail = ({route, navigation}) => {
             visible={showModal.visible}
             onDismiss={() => {
               setModal({visible: false});
-              setTargetedId('0')
-              setItemModel('')
-              setReturnQty('0')
-              setPrice('0')
+              setTargetedId('0');
+              setItemModel('');
+              setReturnQty('0');
+              setPrice('0');
             }}
             contentContainerStyle={containerStyle}>
-              <Text>Product Model : {itemModel}</Text>
-              <TextInput
+            <Text>Product Model : {itemModel}</Text>
+            <TextInput
               label="Kuantiti"
               keyboardType={'decimal-pad'}
               value={returnQty}
@@ -156,11 +210,11 @@ const OrderDetail = ({route, navigation}) => {
               value={reason}
               onChangeText={val => setReason(val)}
             />
-            
-            <Button icon="camera" onPress={ () => setReturnProduct()}>
-  Update Barang Kembalian
-</Button>
-            </Modal>
+
+            <Button icon="camera" onPress={() => setReturnProduct()}>
+              Update Barang Kembalian
+            </Button>
+          </Modal>
         </Portal>
       </View>
     </PaperProvider>

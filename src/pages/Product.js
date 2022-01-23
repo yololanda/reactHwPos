@@ -48,6 +48,10 @@ const Product = () => {
   const [visible, setVisible] = useState(false);
   const hideDialog = () => setVisible(false);
 
+  // modal scrollable for Location
+  const [visibleLocation, setVisibleLocation] = useState(false);
+  const hideDialogLocation = () => setVisibleLocation(false);
+
   useEffect(() => {
     getCategories();
     getProducts();
@@ -118,6 +122,21 @@ const Product = () => {
         hideDialog()
       });
   };
+
+  const getProductByLocation = async (id) => {
+    const result = await fetch(ipAddress + 'api/productlocation/' + id, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        setProducts(data);
+        hideDialogLocation()
+      });
+  };
+
 
   const deleteProduct = (id, name) => {
     Alert.alert('Info', 'Hapus Produk ' + name + ' ?', [
@@ -268,6 +287,7 @@ const Product = () => {
           {
             id: editId,
             price: addPrice,
+            name: name,
             model: model,
             total: total,
             quantity: qty,
@@ -304,6 +324,7 @@ const Product = () => {
       <TouchableOpacity
         key={item.id}
         onPress={() => {
+          setName(item.name);
           setModel(item.model);
           setEditId(String(item.id));
           setCartModal({visible: true});
@@ -319,6 +340,7 @@ const Product = () => {
               style={styles.noImage}></Image>
           </View>
           <View style={styles.cardViewContent}>
+          <Text>{item.name}</Text>
             <Text style={{fontWeight: 'bold'}}>
               {item.model}
               {'\n'}
@@ -366,23 +388,26 @@ const Product = () => {
     )
   }
 
+  const renderLocation = (item, index) => { 
+    return (
+    <Text onPress={ () => getProductByLocation(item.id)} style ={{ fontSize: 20, fontWeight: 'bold', padding: 5, borderWidth: 0.5}} >{item.name}</Text>
+    )
+  }
+
+
   // this is the main render app()
   // renderItem <-- need to be return. return with () not {}
   return (
     <PaperProvider>
       <View style={styles.page}>
         <View style={{flexDirection: 'row'}}>
-          <Button
-            icon="filter"
-            style={{width: '8%', margin: 1, justifyContent: 'center'}}
-            onPress={() => setVisible(true)}
-          />
+
           <Searchbar
             placeholder="Search"
             onChangeText={val => setSearchQuery(val)}
             value={searchQuery}
             autoCapitalize="characters"
-            style={{width: '50%', margin: 8}}
+            style={{width: '70%', margin: 8}}
           />
           <Button
             icon="arrow-right-bold-hexagon-outline"
@@ -390,6 +415,19 @@ const Product = () => {
             onPress={() => findProduct()}>
             Cari
           </Button>
+        </View>
+        <View style={{flexDirection: 'row'}}>
+        <Button
+            icon="filter"
+            style={styles.filterButton}
+            onPress={() => setVisible(true)}
+          >Kategori</Button>
+        
+        <Button
+            icon="filter"
+            style={styles.filterButton}
+            onPress={() => setVisibleLocation(true)}
+          >Lokasi</Button>
         </View>
         <View>
           {/* 
@@ -535,6 +573,23 @@ const Product = () => {
               
             </Dialog.ScrollArea>
           </Dialog>
+
+          <Dialog visible={visibleLocation} onDismiss={hideDialogLocation}>
+            <Dialog.ScrollArea>
+             
+                {displayLocation[0]?.id ? (
+                  <FlatList
+                    keyExtractor={item => item.id}
+                    data={displayLocation}
+                    renderItem={({item, index}) => renderLocation(item, index)}
+                  />
+                ) : (
+                  <Text style={{textAlign: 'center'}}>Lokasi Kosong</Text>
+                )}
+              
+            </Dialog.ScrollArea>
+
+          </Dialog>
         </Portal>
         {/* modal react-native-paper */}
       </View>
@@ -584,4 +639,9 @@ const styles = StyleSheet.create({
     width: 50,
     resizeMode: 'stretch',
   },
+  filterButton: {
+    width: '45%', margin: 1, justifyContent: 'center', backgroundColor: 'orange', margin: 8,
+    borderRadius: 8, 
+    fontSize: 5,
+  }
 });

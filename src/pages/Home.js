@@ -51,7 +51,9 @@ const Home = ({navigation}) => {
 
       <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
         <View style={{flexDirection: 'column'}}>
-          <Button icon="barcode-scan" labelStyle={{fontSize: 50}} />
+          <Button icon="barcode-scan" labelStyle={{fontSize: 50}} 
+            onPress={ () => navigation.navigate('Scan')}
+          />
           <Text>Scan Produk</Text>
         </View>
         <View style={{flexDirection: 'column'}}>

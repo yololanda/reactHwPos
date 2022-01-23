@@ -96,6 +96,7 @@ const Cart = ({navigation}) => {
         body: JSON.stringify({
           order_id: id,
           product_id: val.id,
+          name: val.name,
           model: val.model,
           quantity: val.quantity,
           price: val.price,
@@ -154,9 +155,10 @@ const Cart = ({navigation}) => {
       <TouchableOpacity
         key={item.id}
         style={styles.listItems}
-        onPress={() => console.log(item.id)}>
+        onPress={() => console.log(item)}>
         <View style={{flexDirection: 'row', flex: 1}}>
           <View style={{flexDirection: 'column', width: '70%'}}>
+            <Text style={{fontWeight: 'bold'}}>{item.name}</Text>
             <Text style={{fontWeight: 'bold'}}>{item.model}</Text>
             <Text>
               {rupiahFormat(item.price)} X {item.quantity} = RP{' '}
@@ -266,6 +268,11 @@ const Cart = ({navigation}) => {
           }}>
           <Text
             style={styles.uangPas}
+            onPress={() => setUang('0')}>
+            Reset
+          </Text>
+          <Text
+            style={styles.uangPas}
             onPress={() => setUang(total)}>
             Uang Pas
           </Text>
@@ -276,6 +283,7 @@ const Cart = ({navigation}) => {
           placeholder=""
           value={uang}
           onChangeText={val => setUang(val)}
+          keyboardType={'decimal-pad'}
         />
       </View>
       <Text style={styles.total}>

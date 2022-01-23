@@ -26,72 +26,7 @@ const Category = () => {
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.ScrollArea>
             <ScrollView contentContainerStyle={{paddingHorizontal: 24}}>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              <Text>This is a scrollable area</Text>
-              
+              <Text>This is a scrollable area</Text>              
             </ScrollView>
           </Dialog.ScrollArea>
         </Dialog>
